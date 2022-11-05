@@ -15,13 +15,6 @@ jobs:
       uses: actions/checkout@v3
       with:
         ref: ${{ github.ref_name }}
-    - name: Create GitHub Release
-      uses: actions/create-release@v2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref_name }}
-        release_name: ${{ github.ref_name }}
     - name: Railway Install
       run: npm i -g @railway/cli
     - name: D
