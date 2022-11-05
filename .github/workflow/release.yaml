@@ -1,0 +1,84 @@
+name: Release and deploy Todo
+
+on:
+  push:
+    branches:
+    - 'v[0-9]+.[0-9]+'
+
+jobs:
+  release-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Echo the branch name
+      run: echo "current branch - ${{ github.ref_name }}"
+    - name: Checkout the branch
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref_name }}
+    - name: Deployment
+      run: railway up
+      env:
+        RAILWAY_TOKEN: ${{ secrets.CICD_WWK }}
+    - name: Send custom JSON data to Slack workflow
+      id: slack
+      uses: slackapi/slack-github-action@v1.23.0
+      with:
+        payload: |
+          {
+            "blocks": [
+              {
+                "type": "header",
+                "text": {
+                  "type": "plain_text",
+                  "text": "DipSA55 CI/CD Assignment Submission",
+                  "emoji": true
+                }
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "Name:\nWint War Khing"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "Metriculation:\nA0265088U"
+                  }
+                ]
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "Email:\ne1045763@u.nus.edu"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "Repository:\nhttps://github.com/WintWarKhing/GoLangApplication"
+                  }
+                ]
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "Deployment:\nspicy-holiday-production.up.railway.app"
+                  }
+                ]
+              },
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "<spicy-holiday-production.up.railway.app|Open Application>"
+                }
+              }
+            ]
+          }
+  
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_URL }}
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
